@@ -2,8 +2,10 @@
 name = "audible_api"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "MIT OR Apache-2.0"
+description = "Unofficial API for Audible."
+repository = "https://github.com/cmarkh/audible_api"
+readme = "README.md"
 
 [dependencies]
 base64 = "0.22.1"
