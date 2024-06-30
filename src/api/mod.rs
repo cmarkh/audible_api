@@ -26,10 +26,6 @@ impl Client {
                 reqwest::header::CONTENT_TYPE,
                 "application/json".parse().unwrap(),
             );
-            headers.insert(
-                reqwest::header::ACCEPT_ENCODING,
-                "gzip, deflate".parse().unwrap(),
-            );
             headers.insert(reqwest::header::CONNECTION, "keep-alive".parse().unwrap());
             headers
         };

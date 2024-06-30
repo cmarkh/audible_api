@@ -1,12 +1,11 @@
-use serde_json::json;
+use serde_json::{json, Value};
 
 use super::Client;
 use crate::Result;
 
 impl Client {
-    pub async fn get_library(&self) -> Result<()> {
-        let path = "1.0/library";
-        let url = format!("{}/{}", self.base_url, path);
+    pub async fn get_library(&self) -> Result<Value> {
+        let url = format!("{}/1.0/library", self.base_url);
         let query = json! {{
                 "num_results": 1000,
                 "response_groups": "product_desc,product_attrs",
@@ -15,9 +14,8 @@ impl Client {
         let req = self.client.get(url).query(&query).build()?;
 
         let res = self.send_request(req).await?;
-        dbg!(res.text().await?);
-
-        todo!()
+        let json: Value = res.json().await?;
+        Ok(json)
     }
 }
 
