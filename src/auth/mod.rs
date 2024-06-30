@@ -1,10 +1,11 @@
 use register::Registration;
 use serde::{Deserialize, Serialize};
 
-use crate::localization::Locale;
 use crate::Result;
+use localization::Locale;
 use sign_in::sign_in;
 
+pub mod localization;
 pub mod oauth;
 pub mod register;
 pub mod sign_in;

@@ -1,9 +1,7 @@
-use crate::{
-    localization::{self},
-    Result,
-};
+use crate::Result;
 
 use super::{
+    localization,
     oauth::{build_oauth_url, extract_auth_code},
     register::register,
     Auth,
