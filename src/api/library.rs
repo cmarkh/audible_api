@@ -1,3 +1,4 @@
+/// see API docs at https://audible.readthedocs.io/en/latest/misc/external_api.html
 use serde_json::{json, Value};
 
 use super::Client;
