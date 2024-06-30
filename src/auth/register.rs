@@ -137,3 +137,42 @@ pub async fn register(
         customer_info,
     })
 }
+
+pub async fn deregister(
+    access_token: &str,
+    domain: &str,
+    deregister_all_devices: bool,
+    with_username: bool,
+) -> Result<Value> {
+    let body = json!({
+        "deregister_all_existing_accounts": deregister_all_devices
+    });
+
+    let headers = {
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            format!("Bearer {}", access_token).parse()?,
+        );
+        headers
+    };
+
+    let target_domain = if with_username { "audible" } else { "amazon" };
+
+    let resp = reqwest::Client::new()
+        .post(&format!(
+            "https://api.{}.{}/auth/deregister",
+            target_domain, domain
+        ))
+        .json(&body)
+        .headers(headers)
+        .send()
+        .await?;
+
+    if !resp.status().is_success() {
+        return Err(format!("Failed to deregister: {}", resp.text().await?).into());
+    }
+    let json = resp.json().await?;
+
+    Ok(json)
+}
