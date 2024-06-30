@@ -1,8 +1,5 @@
-use base64::prelude::*;
 use register::Registration;
-use rsa::{pkcs1::DecodeRsaPrivateKey, sha2::Sha256, Pkcs1v15Sign};
 use serde::{Deserialize, Serialize};
-use sha2::Digest;
 
 use crate::Result;
 use localization::Locale;
@@ -12,6 +9,7 @@ pub mod localization;
 pub mod oauth;
 pub mod register;
 pub mod sign_in;
+pub mod auth_headers;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Auth {
@@ -49,56 +47,4 @@ impl Auth {
         let auth = sign_in("us", None, false, None).await?;
         Ok(auth)
     }
-
-    pub fn sign_request(
-        &self,
-        method: &str,
-        path: &str,
-        body: &[u8],
-    ) -> Result<reqwest::header::HeaderMap> {
-        let date = chrono::Utc::now().to_rfc3339() + "Z";
-
-        let signature = signature(
-            method,
-            path,
-            body,
-            &self.device_registration.adp_token,
-            &self.device_registration.device_private_key,
-            &date,
-        )?;
-
-        let headers = {
-            let mut headers = reqwest::header::HeaderMap::new();
-            headers.insert("x-adp-token", self.device_registration.adp_token.parse()?);
-            headers.insert("x-adp-alg", "SHA256withRSA:1.0".parse()?);
-            headers.insert("x-adp-signature", signature.parse()?);
-            headers
-        };
-
-        Ok(headers)
-    }
-}
-
-pub fn signature(
-    method: &str,
-    path: &str,
-    body: &[u8],
-    adp_token: &str,
-    device_private_key: &str,
-    date: &str,
-) -> Result<String> {
-    let str_body = std::str::from_utf8(body).unwrap();
-    let data = format!(
-        "{}\n{}\n{}\n{}\n{}",
-        method, path, date, str_body, adp_token
-    );
-
-    let key = rsa::RsaPrivateKey::from_pkcs1_pem(device_private_key)?;
-    let hashed = Sha256::digest(data.as_bytes());
-    let padding_scheme = Pkcs1v15Sign::new::<Sha256>();
-    let signature = key.sign(padding_scheme, &hashed)?;
-    let signed_encoded = BASE64_STANDARD.encode(signature);
-    let signature = format!("{}:{}", signed_encoded, date);
-
-    Ok(signature)
 }

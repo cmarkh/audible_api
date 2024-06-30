@@ -1,5 +1,6 @@
 use reqwest::{Request, Response};
 
+use crate::auth::auth_headers::auth_headers;
 use crate::auth::Auth;
 use crate::Result;
 
@@ -48,9 +49,13 @@ impl Client {
             None => Vec::new(),
         };
         let path = request.url().to_string().replace(&self.base_url, "");
-        let auth_headers = self
-            .auth
-            .sign_request(request.method().as_str(), &path, &body)?;
+        let auth_headers = auth_headers(
+            request.method().as_str(),
+            &path,
+            &body,
+            &self.auth.device_registration.adp_token,
+            &self.auth.device_registration.device_private_key,
+        )?;
         request.headers_mut().extend(auth_headers);
 
         Ok(self.client.execute(request).await?)
