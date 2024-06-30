@@ -56,7 +56,11 @@ impl Client {
     ///   product_extended_attrs, product_plan_details, product_plans, rating, sample, sku, series, reviews, ws4v,
     ///   origin, relationships, review_attrs, categories, badge_types, category_ladders, claim_code_url,
     ///   is_downloaded, is_finished, is_returnable, origin_asin, pdf_url, percent_complete, periodicals, provided_review]
-    pub async fn get_library_by_asin(&self, asin: &str, params: Option<Value>) -> Result<Value> {
+    pub async fn get_library_item_by_asin(
+        &self,
+        asin: &str,
+        params: Option<Value>,
+    ) -> Result<Value> {
         let url = format!("{}/1.0/library/{}", self.base_url, asin);
 
         let mut req = self.client.get(url);
@@ -81,13 +85,13 @@ impl Client {
     ) -> Result<Value> {
         let url = format!("{}/1.0/library/item", self.base_url);
 
-        let mut query = json! {{
+        let mut json = json! {{
                 "asin": asin,
         }};
         if let Some(params) = params {
-            query.merge(&params);
+            json.merge(&params);
         }
-        let req = self.client.post(url).query(&query).build()?;
+        let req = self.client.post(url).json(&json).build()?;
 
         let res = self.send_request(req).await?;
         let json: Value = res.json().await?;
@@ -106,13 +110,13 @@ impl Client {
     ) -> Result<Value> {
         let url = format!("{}/1.0/library/item", self.base_url);
 
-        let mut query = json! {{
+        let mut json = json! {{
                 "asin": asin,
         }};
         if let Some(params) = params {
-            query.merge(&params);
+            json.merge(&params);
         }
-        let req = self.client.put(url).query(&query).build()?;
+        let req = self.client.put(url).query(&json).build()?;
 
         let res = self.send_request(req).await?;
         let json: Value = res.json().await?;
@@ -137,7 +141,7 @@ impl Client {
 
         let mut req = self.client.post(url);
         if let Some(params) = params {
-            req = req.query(&params);
+            req = req.json(&params);
         }
         let req = req.build()?;
 
@@ -168,7 +172,7 @@ impl Client {
 
         let mut req = self.client.post(url);
         if let Some(params) = params {
-            req = req.query(&params);
+            req = req.json(&params);
         }
         let req = req.build()?;
 
@@ -198,7 +202,7 @@ impl Client {
 
         let mut req = self.client.post(url);
         if let Some(params) = params {
-            req = req.query(&params);
+            req = req.json(&params);
         }
         let req = req.build()?;
 
@@ -217,7 +221,7 @@ impl Client {
 
         let mut req = self.client.get(url);
         if let Some(params) = params {
-            req = req.query(&params);
+            req = req.json(&params);
         }
         let req = req.build()?;
 
@@ -235,7 +239,7 @@ impl Client {
 
         let mut req = self.client.post(url);
         if let Some(params) = params {
-            req = req.query(&params);
+            req = req.json(&params);
         }
         let req = req.build()?;
 

@@ -4,7 +4,23 @@ use crate::auth::auth_headers::auth_headers;
 use crate::auth::Auth;
 use crate::Result;
 
+pub mod account;
+pub mod annotations;
+pub mod app;
+pub mod bages;
+pub mod catalog;
+pub mod collections;
+pub mod content;
+pub mod customer;
+pub mod last_positions;
 pub mod library;
+pub mod sidecar;
+pub mod orders;
+pub mod pages;
+pub mod recommendations;
+pub mod stats;
+pub mod user;
+pub mod wishlist;
 
 const API_URL: &str = "https://api.audible.";
 
