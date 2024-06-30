@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 use crate::auth::oauth::build_client_id;
-use crate::error::Result;
+use crate::Result;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Registration {

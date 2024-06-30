@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use base64::{prelude::BASE64_URL_SAFE_NO_PAD, Engine};
 use rand::Rng;
 use sha2::Digest;
 
-use crate::error::Result;
+use crate::Result;
 
 // returns (url, code_verifier, serial)
 pub fn build_oauth_url(
@@ -73,11 +75,6 @@ pub fn build_oauth_url(
     Ok((url, code_verifier, serial))
 }
 
-fn create_code_verifier() -> String {
-    let verifier: Vec<u8> = rand::thread_rng().gen::<[u8; 32]>().to_vec();
-    BASE64_URL_SAFE_NO_PAD.encode(verifier)
-}
-
 pub fn build_device_serial() -> String {
     uuid::Uuid::new_v4()
         .to_string()
@@ -91,11 +88,27 @@ pub fn build_client_id(serial: &str) -> String {
     hex::encode(client_id_bytes)
 }
 
+fn create_code_verifier() -> String {
+    let verifier: Vec<u8> = rand::thread_rng().gen::<[u8; 32]>().to_vec();
+    BASE64_URL_SAFE_NO_PAD.encode(verifier)
+}
+
 fn create_s256_code_challenge(verifier: &[u8]) -> String {
     let mut hasher = sha2::Sha256::new();
     hasher.update(verifier);
     let digest = hasher.finalize();
     BASE64_URL_SAFE_NO_PAD.encode(digest)
+}
+
+pub fn extract_auth_code(response_url: &str) -> Result<String> {
+    let response_url = url::Url::parse(response_url)?;
+    let query_pairs: HashMap<_, _> = response_url.query_pairs().into_owned().collect();
+    let auth_code = match query_pairs.get("openid.oa2.authorization_code") {
+        Some(auth_code) => auth_code.to_string(),
+        None => return Err("Authorization code not found in response URL".into()),
+    };
+
+    Ok(auth_code)
 }
 
 #[cfg(test)]

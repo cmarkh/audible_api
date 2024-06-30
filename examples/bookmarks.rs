@@ -1,7 +1,7 @@
-use audible::auth::browser_signin::serve_signin;
+use audible::auth::Auth;
 
 #[tokio::main]
 async fn main() {
-    let auth = serve_signin().await.expect("Failed to sign in");
+    let auth = Auth::default("us").await.expect("Failed to sign in");
     dbg!(auth);
 }
