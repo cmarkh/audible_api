@@ -17,7 +17,6 @@ pub struct Client {
 impl Client {
     pub fn new(auth: Auth) -> Result<Self> {
         let base_url = format!("{}{}", API_URL, auth.locale.domain);
-        // let base_url = "http://localhost:9777".to_string();
 
         let headers = {
             let mut headers = reqwest::header::HeaderMap::new();
@@ -32,10 +31,6 @@ impl Client {
                 "gzip, deflate".parse().unwrap(),
             );
             headers.insert(reqwest::header::CONNECTION, "keep-alive".parse().unwrap());
-            headers.insert(
-                reqwest::header::USER_AGENT,
-                "python-httpx/0.27.0".parse().unwrap(),
-            );
             headers
         };
 
@@ -61,8 +56,6 @@ impl Client {
             .auth
             .sign_request(request.method().as_str(), &path, &body)?;
         request.headers_mut().extend(auth_headers);
-
-        dbg!(&request);
 
         Ok(self.client.execute(request).await?)
     }
