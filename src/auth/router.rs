@@ -24,44 +24,52 @@ lazy_static::lazy_static! {
 
 pub async fn router() -> Result<Router> {
     Ok(Router::new()
-        .route("/auidble-signin", get(audible_signin))
-        .route("/auidble-signin/capture", post(audible_capture))
-        .route("/auidble-signin/success", get(success_page)))
+        .route("/audible-signin", get(audible_signin))
+        .route("/audible-signin/capture", post(audible_capture))
+        .route("/audible-signin/success", get(success_page)))
 }
 
 pub async fn router_with_done_notification(notifier: Arc<Notify>) -> Result<Router> {
     Ok(Router::new()
-        .route("/auidble-signin", get(audible_signin))
-        .route("/auidble-signin/capture", post(audible_capture))
+        .route("/audible-signin", get(audible_signin))
+        .route("/audible-signin/capture", post(audible_capture))
         .route(
-            "/auidble-signin/success",
+            "/audible-signin/success",
             get(success_page_with_sender).layer(Extension(notifier.clone())),
         ))
 }
 
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "kebab-case")]
+struct AudibleSignInQuery {
+    country_code: String,
+    device_id: Option<String>,
+}
+
 #[derive(Template)]
 #[template(path = "audible_signin/signin.html")]
-struct AudibleSignIn {}
+struct AudibleSignIn {
+    oauth_url: String,
+}
 
 async fn audible_signin(
     // Extension(pool): Extension<Pool>,
-    Query(country_code): Query<String>,
-    Query(device_id): Query<Option<String>>,
+    Query(query): Query<AudibleSignInQuery>,
 ) -> Result<AudibleSignIn> {
-    let locale =
-        crate::localization::find_by_country_code(&country_code).ok_or("Country code not found")?;
+    let locale = crate::localization::find_by_country_code(&query.country_code)
+        .ok_or("Country code not found")?;
     let (oauth_url, code_verifier, device_serial) = build_oauth_url(
         &locale.country_code,
         &locale.domain,
         &locale.market_place_id,
-        device_id,
+        query.device_id,
         false,
     )?;
 
     let device = PartialDevice {
         device_serial: device_serial.clone(),
         code_verifier,
-        oauth_url,
+        oauth_url: oauth_url.clone(),
         country_code: locale.country_code,
         domain: locale.domain,
         market_place_id: locale.market_place_id,
@@ -71,7 +79,9 @@ async fn audible_signin(
     // let conn = pool.get()?;
     // db::auth::insert_device(&conn, &device_serial, &code_verifier, &oauth_url)?;
 
-    Ok(AudibleSignIn {})
+    dbg!(&oauth_url);
+
+    Ok(AudibleSignIn { oauth_url })
 }
 
 #[derive(Serialize, Deserialize)]

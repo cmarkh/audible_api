@@ -17,6 +17,7 @@ pub struct Locale {
 }
 
 pub fn find_by_country_code(country_code: &str) -> Option<Locale> {
+    let country_code = country_code.to_lowercase();
     LOCALES
         .iter()
         .find(|(_, locale)| locale.country_code == country_code)
