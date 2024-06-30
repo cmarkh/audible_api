@@ -9,11 +9,13 @@ edition = "2021"
 base64 = "0.22.1"
 chrono = "0.4.38"
 console = "0.15.8"
+cookie = "0.18.1"
 dotenvy = "0.15.7"
 hex = "0.4.3"
 lazy_static = "1.5.0"
 rand = "0.8.5"
-reqwest = { version = "0.12.5", features = ["json"] }
+reqwest = { version = "0.12.5", features = ["json", "cookies"] }
+rsa = { version = "0.9.6", features = ["sha2"] }
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.118"
 sha2 = "0.10.8"
