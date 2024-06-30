@@ -1,4 +1,4 @@
-use audible::{api::Client, auth::Auth};
+use audible_api::{api::Client, auth::Auth};
 
 #[tokio::main]
 async fn main() {
