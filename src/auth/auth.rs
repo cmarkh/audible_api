@@ -1,14 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    login::{self, external_login},
+    signin_constructor::{self, external_login},
     register::{self, register},
 };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Auth {
     pub locale: crate::localization::Locale,
-    pub auth: login::Auth,
+    pub auth: signin_constructor::Auth,
     pub device_registration: register::Registration,
 }
 

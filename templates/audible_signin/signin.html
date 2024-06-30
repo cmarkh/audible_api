@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sign in to Audible</title>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+</head>
+
+<body>
+    <div hx-get="https://example.com" hx-trigger="load" hx-target="#content" hx-swap="innerHTML">
+        Loading...
+    </div>
+    <div id="content"></div>
+    <p>Current URL: <span id="currentUrl"></span></p>
+
+    <script>
+        document.addEventListener("htmx:afterSwap", (event) => {
+            const currentUrlDisplay = document.getElementById('currentUrl');
+            if (event.detail.elt.id === 'content') {
+                currentUrlDisplay.textContent = event.detail.xhr.responseURL;
+            }
+        });
+    </script>
+</body>
+
+</html>

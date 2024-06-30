@@ -1,8 +1,7 @@
-use audible::auth::Auth;
+use audible::auth::browser_signin::serve_signin;
 
 #[tokio::main]
 async fn main() {
-    let country_code = "us";
-    let auth = Auth::default(country_code).await.unwrap();
+    let auth = serve_signin().await.expect("Failed to sign in");
     dbg!(auth);
 }

@@ -4,10 +4,13 @@ use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
-use crate::login::build_client_id;
+use crate::auth::oauth::build_client_id;
+use crate::error::Result;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Registration {
+    pub device_serial: String,
+    pub client_id: String,
     pub adp_token: String,
     pub device_private_key: String,
     pub access_token: String,
@@ -25,7 +28,9 @@ pub async fn register(
     domain: &str,
     device_serial: &str,
     with_username: bool,
-) -> Result<Registration, Box<dyn std::error::Error>> {
+) -> Result<Registration> {
+    let client_id = build_client_id(device_serial);
+
     let body = json!({
         "requested_token_type": [
             "bearer",
@@ -49,7 +54,7 @@ pub async fn register(
             "app_name": "Audible"
         },
         "auth_data": {
-            "client_id": build_client_id(device_serial),
+            "client_id": client_id,
             "authorization_code": authorization_code,
             "code_verifier": code_verifier,
             "code_algorithm": "SHA-256",
@@ -119,6 +124,8 @@ pub async fn register(
     }
 
     Ok(Registration {
+        device_serial: device_serial.to_string(),
+        client_id,
         adp_token,
         device_private_key,
         access_token,
