@@ -318,6 +318,7 @@ mod tests {
     async fn test_get_library() {
         let auth = Auth::default("us").await.unwrap();
         let client = Client::new(auth).unwrap();
-        client.get_library(None).await.unwrap();
+        let res = client.get_library(None).await.unwrap();
+        dbg!(res);
     }
 }

@@ -70,3 +70,19 @@ impl Client {
         Ok(json)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::auth::Auth;
+
+    #[tokio::test]
+    async fn test_get_wishlist() {
+        let auth = Auth::default("us").await.unwrap();
+        let client = Client::new(auth).unwrap();
+        let res = client.get_wishlist(None).await.unwrap();
+        dbg!(res);
+        // let json = serde_json::to_string_pretty(&res).unwrap();
+        // std::fs::write("wishlist.json", json).unwrap();
+    }
+}

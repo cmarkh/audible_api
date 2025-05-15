@@ -2,3 +2,5 @@
 auth.json
 .env
 auth.db
+.DS_Store
+.venv/

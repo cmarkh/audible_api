@@ -1,0 +1,15 @@
+[project]
+name = "library"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "duckdb-engine>=0.17.0",
+    "duckdb>=1.2.2",
+    "ipykernel>=6.29.5",
+    "ipython-sql>=0.5.0",
+    "numpy>=2.2.5",
+    "pandas>=2.2.3",
+    "sql>=2022.4.0",
+]
